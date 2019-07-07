@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:testimage/models/Person.dart';
 import 'package:testimage/utils/EncodeUtil.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:testimage/pages/pesonlist.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -16,6 +16,7 @@ class _SearchPageState extends State<SearchPage> {
   File _image;
   var _type;
   var _base64;
+  List data = [];
 
   Future _selectedImage() async{
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -33,17 +34,21 @@ class _SearchPageState extends State<SearchPage> {
 
   searchFace() {
     EncodeUtil.imageFile2Base64(_image).then((base64) async {
-      _base64 = base64;
-      _type = "person";
-      getResult(_type,_base64);
+      setState(() {
+        _base64 = base64;
+        _type = "person";  
+      });
+     getResult(_type,_base64);
     });
 //    List<Person> personList = await
   }
 
+  
+
   getResult(String type,String base64) async {
     Map<String, dynamic> param = {
       'type': type,
-      'content': _base64
+      'content': base64,
     };
     try {
       final http.Response response = await http.post(
@@ -53,8 +58,15 @@ class _SearchPageState extends State<SearchPage> {
           headers: {"Content-Type":"application/json"}
       );
 
+
       final Map<String, dynamic> responseData = json.decode(response.body);
-      print('$responseData 数据');
+      setState(() {
+        data = responseData['data'];
+      });
+      Navigator.push(
+            context,
+            new MaterialPageRoute(builder: (context) => new PersonList(data: data,)),
+      );
       
     } catch (error) {
       print('$error错误');
@@ -123,13 +135,6 @@ class _SearchPageState extends State<SearchPage> {
                     : Image.file(_image),
               )
             ),
-            Container(
-              child: Center(
-                child: _base64 == null
-                    ? Text("base64 is null.")
-                    : Text.rich(_base64),
-              ),
-            )
           ],
         ),
       ),
