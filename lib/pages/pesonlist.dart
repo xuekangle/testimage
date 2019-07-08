@@ -18,13 +18,12 @@ class _PersonListState extends State<PersonList> {
         title: Text("人员列表"),
       ),
       body: Center(
-        child: getBody(),
+        child: getBody(context),
       ),
     );
   }
-  getBody(){
-    print(widget.data);
-    if(widget.data.length != 0){
+  getBody(BuildContext context){
+    if(widget.data != null && widget.data.length != 0){
       return ListView.builder(
         itemCount: widget.data.length,
         itemBuilder: (BuildContext context,int position){
