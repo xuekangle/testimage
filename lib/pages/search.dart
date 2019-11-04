@@ -26,7 +26,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Future getImage() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.camera);
+    var image = await ImagePicker.pickImage(source: ImageSource.camera,maxHeight: 150);
     setState(() {
       _image = image;
     });
@@ -52,7 +52,7 @@ class _SearchPageState extends State<SearchPage> {
     };
     try {
       final http.Response response = await http.post(
-          'http://47.104.135.205:8801/person/search',
+          'http://120.24.63.145:8801/person/search',
           body: json.encode(param),
           encoding: Utf8Codec(),
           headers: {"Content-Type":"application/json"}
